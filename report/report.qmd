@@ -1,0 +1,151 @@
+---
+title: "Algorithmic Explanations and Institutional Legitimacy in AI-Enabled Governance"
+subtitle: "A 2 x 3 Between-Subjects Experiment"
+author: "JiaxiaoMU"
+date: "2026-10-05"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+jupyter: python3
+---
+
+```{python}
+#| echo: false
+#| include: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+df = pd.read_csv("../data/cleaned_data.csv")
+gender_map = {"男": "Male", "女": "Female"}
+age_map = {"0-20岁": "Under 20", "21-30岁": "21-30", "31-40岁": "31-40",
+           "41-50岁": "41-50", "51-60岁": "51-60", "60岁以上": "60+"}
+edu_map = {"初中": "Junior high", "普高/中专/技校/职高": "High school",
+           "专科": "Associate", "本科": "Bachelor", "硕士": "Master", "博士": "Doctorate"}
+df["Gender"] = df["Gender"].map(gender_map)
+df["Age_Group"] = df["Age_Group"].map(age_map)
+df["Edu_Level"] = df["Edu_Level"].map(edu_map)
+
+def cronbach_alpha(d, items):
+    X = d[items].dropna()
+    k = X.shape[1]
+    return (k / (k - 1)) * (1 - X.var(axis=0, ddof=1).sum() / X.sum(axis=1).var(ddof=1))
+
+def partial_eta2(aov, term):
+    return aov.loc[term, "sum_sq"] / (aov.loc[term, "sum_sq"] + aov.loc["Residual", "sum_sq"])
+
+DVs = {"PIL": "Perceived institutional legitimacy",
+       "IT": "Institutional trust",
+       "PA": "Policy acceptance"}
+sns.set_theme(style="whitegrid", context="talk")
+```
+
+## 1. Introduction
+
+Artificial intelligence is increasingly embedded in public governance, where algorithmic systems now make consequential decisions about welfare, fines, and law enforcement. A central promise of algorithmic governance is greater fairness, transparency, and efficiency, and governments widely assume that explaining these decisions will sustain public trust and institutional legitimacy. Yet a growing body of evidence suggests that explanations do not uniformly translate into perceived legitimacy. This study asks how different types of algorithmic explanations—outcome, process, and empathic—shape citizens' perceptions of institutional legitimacy, and whether these effects depend on the stakes of the decision. We argue that the demand for legitimacy shifts with decision stakes, so an explanation that works in one context may fail in another. Using a 2 x 3 between-subjects experiment (N = 420), we examine perceived institutional legitimacy, institutional trust, and policy acceptance.
+
+## 2. Method
+
+We employed a 2 (decision stakes: low vs. high) x 3 (explanation type: outcome, process, empathic) between-subjects design with 70 participants per cell (N = 420). The low-stakes scenario described an automated parking fine; the high-stakes scenario described the denial of public housing assistance. Outcome explanations stated only the result; process explanations described the rule-based procedure; empathic explanations additionally expressed human concern and offered manual review. Participants rated perceived institutional legitimacy (4 items), institutional trust (3 items), and policy acceptance (3 items) on 5-point scales, together with control measures of government trust, AI attitude, AI experience, and policy attention. We assessed internal consistency with Cronbach's alpha, computed descriptive statistics, and estimated 2 x 3 analyses of variance (ANOVA) with partial eta-squared effect sizes for each outcome. Significant interactions were decomposed with simple-effects tests, and pairwise differences were assessed with Tukey HSD.
+
+## 3. Results
+
+All three outcome scales showed good internal consistency (@tbl-reliability).
+
+```{python}
+#| echo: false
+#| output: asis
+#| label: tbl-reliability
+#| tbl-cap: "Internal consistency of the outcome scales"
+scales = {"Perceived institutional legitimacy (PIL)": ["PIL1", "PIL2", "PIL3", "PIL4"],
+          "Institutional trust (IT)": ["IT1", "IT2", "IT3"],
+          "Policy acceptance (PA)": ["PA1", "PA2", "PA3"]}
+rel = pd.DataFrame({
+    "Scale": list(scales.keys()),
+    "Items": [len(scales[k]) for k in scales],
+    "Cronbach's alpha": [round(cronbach_alpha(df, scales[k]), 2) for k in scales],
+})
+print(rel.to_markdown(index=False))
+```
+
+Descriptive statistics by condition are reported in @tbl-desc.
+
+```{python}
+#| echo: false
+#| output: asis
+#| label: tbl-desc
+#| tbl-cap: "Means and standard deviations by condition"
+g = df.groupby(["Stakes_Group", "Explanation_Group"])
+desc = g.agg(n=("PIL_Mean", "size"),
+             PIL_M=("PIL_Mean", "mean"), PIL_SD=("PIL_Mean", "std"),
+             IT_M=("IT_Mean", "mean"), IT_SD=("IT_Mean", "std"),
+             PA_M=("PA_Mean", "mean"), PA_SD=("PA_Mean", "std"))
+desc = desc.reindex(pd.MultiIndex.from_product(
+    [["Low Stakes", "High Stakes"], ["Outcome", "Process", "Empathic"]],
+    names=["Stakes", "Explanation"]))
+desc = desc.round(2).reset_index()
+desc.columns = ["Decision stakes", "Explanation type", "n",
+                "Legitimacy M", "Legitimacy SD",
+                "Trust M", "Trust SD",
+                "Acceptance M", "Acceptance SD"]
+print(desc.to_markdown(index=False))
+```
+
+Decision stakes strongly affected all outcomes. High-stakes decisions produced markedly lower perceived institutional legitimacy (F(1, 414) = 154.55, p < .001, η² = .27), institutional trust (F = 85.67, p < .001, η² = .17), and policy acceptance (F = 133.84, p < .001, η² = .24). Explanation type also exerted significant, though smaller, main effects on all three outcomes (all p < .01, η² ≈ .04).
+
+Critically, the interaction between stakes and explanation type was significant for every outcome (all p < .01, η² ≈ .03; @tbl-anova, @fig-interaction). Simple-effects analyses revealed that explanation type had no effect under low stakes (all p > .72), but a strong effect under high stakes (all p < .001). Under high stakes, empathic explanations yielded the lowest legitimacy (M = 2.48) relative to outcome (M = 3.11) and process (M = 3.25); Tukey tests confirmed that empathic differed from both outcome and process (ps < .01), whereas outcome and process did not differ (p > .70).
+
+```{python}
+#| echo: false
+#| output: asis
+#| label: tbl-anova
+#| tbl-cap: "2 x 3 ANOVA results with partial eta-squared"
+rows = []
+for key, label in DVs.items():
+    dv = f"{key}_Mean"
+    m = ols(f"{dv} ~ C(Stakes_Group) * C(Explanation_Group)", data=df).fit()
+    a = sm.stats.anova_lm(m, typ=2)
+    for term, name in [("C(Stakes_Group)", "Stakes"),
+                       ("C(Explanation_Group)", "Explanation"),
+                       ("C(Stakes_Group):C(Explanation_Group)", "Stakes x Explanation")]:
+        rows.append({"Outcome": label, "Effect": name,
+                     "F": round(a.loc[term, "F"], 2),
+                     "p": f"{a.loc[term, 'PR(>F)']:.2e}",
+                     "partial η²": round(partial_eta2(a, term), 3)})
+anova = pd.DataFrame(rows)
+print(anova.to_markdown(index=False))
+```
+
+```{python}
+#| echo: false
+#| label: fig-interaction
+#| fig-cap: "Mean ratings by explanation type and decision stakes (error bars = ±1 SE)"
+#| fig-width: 6.5
+#| fig-height: 3.2
+fig, axes = plt.subplots(1, 3, figsize=(13, 4.5), sharey=False)
+expl_order = ["Outcome", "Process", "Empathic"]
+for ax, (key, label) in zip(axes, DVs.items()):
+    sns.pointplot(data=df, x="Explanation_Group", y=f"{key}_Mean",
+                  hue="Stakes_Group", order=expl_order,
+                  hue_order=["Low Stakes", "High Stakes"],
+                  errorbar="se", capsize=0.1, ax=ax, markers=["o", "s"])
+    ax.set_title(label)
+    ax.set_xlabel("Explanation type")
+    ax.set_ylabel("Mean rating")
+    ax.set_ylim(1, 5.4)
+    ax.legend(title="Stakes", fontsize=8)
+plt.tight_layout()
+plt.show()
+```
+
+## 4. Discussion
+
+These findings challenge the prevailing assumption that more explanation—or more humanized explanation—always enhances legitimacy. In high-stakes settings, empathic explanations backfired: they were associated with the lowest perceived legitimacy, trust, and acceptance. One interpretation is that in high-consequence decisions citizens prioritize procedural clarity and rule-bounded accountability, and empathic framing may be read as insincere or as a deflection from the substance of the decision. By contrast, explanation type was essentially irrelevant for low-stakes decisions.
+
+The results carry practical implications for the design of algorithmic governance. For low-stakes decisions, agencies may economize on explanatory effort. For high-stakes decisions, process explanations appear safest, while empathic framing should be used cautiously, as it may undermine rather than restore legitimacy.
+
+Several limitations warrant caution. We did not measure the proposed mediating mechanisms (procedural fairness, dehumanization) or moderators, so the psychological account remains speculative. The sample is a convenience survey, the design uses a single hypothetical scenario per stakes level, and only cleaned data—not raw exports—are available. Future work should manipulate mediators directly and test these effects with real decisions and longitudinal designs.

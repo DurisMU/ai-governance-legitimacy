@@ -1,0 +1,25 @@
+2x3 ANOVA Results Summary,,,,,,,,,,
+,,,,,,,,,,
+Dependent_Variable,index,sum_sq,df,F,PR(>F),,,,,
+Perceived Institutional Legitimacy (PIL),C(Stakes),123.500148809523,1,154.547255155438,2.2681318431818e-30,,,,,
+Perceived Institutional Legitimacy (PIL),C(Explanation),14.3526785714285,2,8.98042269067898,0.00015208397138971,,,,,
+Perceived Institutional Legitimacy (PIL),C(Stakes):C(Explanation),9.43779761904763,2,5.90519821553393,0.00296008801786535,,,,,
+Perceived Institutional Legitimacy (PIL),Residual,330.83125,414,,,,,,,
+Institutional Trust (IT),C(Stakes),63.2595238095233,1,85.6695155067934,1.15589576901272e-18,,,,,
+Institutional Trust (IT),C(Explanation),8.7814814814814,2,5.94618184461527,0.00284446767954963,,,,,
+Institutional Trust (IT),C(Stakes):C(Explanation),9.03333333333334,2,6.11671763771269,0.00241010046379974,,,,,
+Institutional Trust (IT),Residual,305.703174603175,414,,,,,,,
+Policy Acceptance (PA),C(Stakes),128.520899470899,1,133.843970979888,5.16571209860047e-27,,,,,
+Policy Acceptance (PA),C(Explanation),16.9063492063491,2,8.80328772155381,0.000180236918645885,,,,,
+Policy Acceptance (PA),C(Stakes):C(Explanation),15.1783068783069,2,7.90348057672881,0.000428023375418877,,,,,
+Policy Acceptance (PA),Residual,397.534920634921,414,,,,,,,
+,,,,,,,,,,
+Group Descriptive Statistics (Mean & SD),,,,,,,,,,
+,,,,,,,,,,
+Stakes,Explanation,PIL_mean,PIL_std,PIL_count,IT_mean,IT_std,IT_count,PA_mean,PA_std,PA_count
+High Stakes,Empathic,2.479,1.011,70,3.019,1.066,70,2.376,1.132,70
+High Stakes,Outcome,3.111,1.08,70,3.552,1.163,70,3.152,1.239,70
+High Stakes,Process,3.246,1.142,70,3.695,0.984,70,3.248,1.156,70
+Low Stakes,Empathic,3.979,0.698,70,4.205,0.557,70,4.014,0.773,70
+Low Stakes,Outcome,4.061,0.729,70,4.181,0.699,70,4.062,0.793,70
+Low Stakes,Process,4.05,0.533,70,4.21,0.418,70,4.019,0.619,70

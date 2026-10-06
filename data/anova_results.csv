@@ -1,0 +1,10 @@
+DV,Effect,F,df_num,df_den,p,partial_eta2
+Perceived Institutional Legitimacy,C(Stakes_Group),154.547,1,414,2.268131843180959e-30,0.272
+Perceived Institutional Legitimacy,C(Explanation_Group),8.98,2,414,0.00015208397138969835,0.042
+Perceived Institutional Legitimacy,C(Stakes_Group):C(Explanation_Group),5.905,2,414,0.0029600880178654713,0.028
+Institutional Trust,C(Stakes_Group),85.67,1,414,1.1558957690123508e-18,0.171
+Institutional Trust,C(Explanation_Group),5.946,2,414,0.002844467679549495,0.028
+Institutional Trust,C(Stakes_Group):C(Explanation_Group),6.117,2,414,0.002410100463799807,0.029
+Policy Acceptance,C(Stakes_Group),133.844,1,414,5.165712098599225e-27,0.244
+Policy Acceptance,C(Explanation_Group),8.803,2,414,0.00018023691864588128,0.041
+Policy Acceptance,C(Stakes_Group):C(Explanation_Group),7.903,2,414,0.00042802337541887674,0.037
