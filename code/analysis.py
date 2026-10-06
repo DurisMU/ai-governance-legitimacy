@@ -207,20 +207,24 @@ print("=" * 70)
 sns.set_theme(style="whitegrid", context="talk")
 
 # --- interaction plot (3 DVs in one row)
-fig, axes = plt.subplots(1, 3, figsize=(15, 4.5), sharey=False)
+fig, axes = plt.subplots(1, 3, figsize=(13, 4.2), sharey=True)
 expl_order = ["Outcome", "Process", "Empathic"]
 for ax, (key, label) in zip(axes, DVs.items()):
     dv = f"{key}_Mean"
     sns.pointplot(data=df, x="Explanation_Group", y=dv,
                   hue="Stakes_Group", order=expl_order,
                   hue_order=["Low Stakes", "High Stakes"],
-                  errorbar="se", capsize=0.1, ax=ax, markers=["o", "s"])
+                  errorbar="se", capsize=0.1, ax=ax, markers=["o", "s"],
+                  legend=False)
     ax.set_title(label)
     ax.set_xlabel("Explanation type")
-    ax.set_ylabel("Mean rating")
-    ax.get_legend().set_title("Decision stakes")
     ax.set_ylim(1, 5.2)
-plt.tight_layout()
+axes[0].set_ylabel("Mean rating")
+handles, _ = axes[0].get_legend_handles_labels()
+fig.legend(handles, ["Low stakes", "High stakes"], title="Decision stakes",
+           loc="lower center", ncol=2, frameon=False,
+           bbox_to_anchor=(0.5, -0.05))
+plt.tight_layout(rect=[0, 0.08, 1, 1])
 plt.savefig(f"{FIG_DIR}/interaction_plot.png", dpi=200, bbox_inches="tight")
 plt.close()
 print("  saved figures/interaction_plot.png")
